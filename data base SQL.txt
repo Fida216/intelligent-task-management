@@ -1,0 +1,281 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le : lun. 28 avr. 2025 à 07:02
+-- Version du serveur : 9.1.0
+-- Version de PHP : 8.3.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données : `taskenuis`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `calendar_events`
+--
+
+DROP TABLE IF EXISTS `calendar_events`;
+CREATE TABLE IF NOT EXISTS `calendar_events` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `date` date NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `time` time DEFAULT NULL,
+  `color` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#8E44AD',
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `calendar_events`
+--
+
+INSERT INTO `calendar_events` (`id`, `date`, `title`, `description`, `time`, `color`, `user_id`) VALUES
+(1, '2025-04-25', 'aller a la fac ', 'hahahhahahahahahh', '10:53:00', '#9B59B6', 2),
+(2, '2025-04-25', 'fida ', 'jajajajajajajaj', '12:53:00', '#8E44AD', 2),
+(3, '2025-04-01', 'aller a la fac ', 'hahahahhahahah', '12:45:00', '#8E44AD', 2),
+(4, '2025-04-25', 'aller a la fac ', 'hahahahhahaha', '15:00:00', '#8E44AD', 2),
+(5, '2025-04-26', 'aller a la fac ', 'lmuygfdxvcb', '17:42:00', '#8E44AD', 0),
+(6, '2025-04-26', 'aller a la fac ', 'lkjhgfg', '00:32:00', '#8E44AD', 0),
+(7, '2025-04-26', 'aller a la fac ', 'lkjhgf', '12:49:00', '#8E44AD', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT '#2c3e50',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `color`, `created_at`) VALUES
+(1, 'Travail', '#3498db', '2025-04-22 18:33:46'),
+(2, 'Personnel', '#2ecc71', '2025-04-22 18:33:46'),
+(3, 'Courses', '#f39c12', '2025-04-22 18:33:46');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `task_id` int DEFAULT NULL,
+  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` enum('reminder','alert','info') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'info',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_read` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `task_id` (`task_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tasks`
+--
+
+DROP TABLE IF EXISTS `tasks`;
+CREATE TABLE IF NOT EXISTS `tasks` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `due_date` date NOT NULL,
+  `duration` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `priority` enum('low','medium','high') COLLATE utf8mb4_unicode_ci DEFAULT 'medium',
+  `category_id` int DEFAULT NULL,
+  `is_late` tinyint(1) DEFAULT '0',
+  `notification_enabled` tinyint(1) DEFAULT '1',
+  `notification_type` enum('email','sms','push') COLLATE utf8mb4_unicode_ci DEFAULT 'email',
+  `completed` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `category` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'non-definie',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `tasks`
+--
+
+INSERT INTO `tasks` (`id`, `user_id`, `title`, `description`, `due_date`, `duration`, `priority`, `category_id`, `is_late`, `notification_enabled`, `notification_type`, `completed`, `created_at`, `updated_at`, `category`) VALUES
+(10, 1, 'préparer la présentation', 'hahahahah', '2025-04-24', '1', 'low', NULL, 0, 1, 'email', 0, '2025-04-23 09:20:20', '2025-04-23 09:20:20', 'skvjhbdv'),
+(11, 1, 'préparer la présentation', 'hahahahah', '2025-04-24', '1', 'medium', NULL, 0, 1, 'email', 0, '2025-04-23 09:27:06', '2025-04-23 09:27:06', 'skvjhbdv'),
+(12, 1, 'aller al fac ', 'kjkjkjdsvsdcldscbndscj;d ', '2025-04-24', '1', 'low', NULL, 0, 1, 'email', 0, '2025-04-23 12:25:57', '2025-04-23 12:25:57', 'skvjhbdv'),
+(13, 1, 'fida barra a9ra ', 'hahahahahha', '2025-04-24', '1', 'high', NULL, 0, 1, 'email', 0, '2025-04-23 13:02:49', '2025-04-23 13:02:49', 'skvjhbdv'),
+(14, 1, 'fida barra a9ra ', 'hahahahahha', '2025-04-24', '1', 'high', NULL, 0, 1, 'email', 0, '2025-04-23 13:02:51', '2025-04-23 13:02:51', 'skvjhbdv'),
+(15, 1, 'fida barra a9ra ', 'hahahahahha', '2025-04-24', '1', 'high', NULL, 0, 1, 'email', 0, '2025-04-23 13:02:53', '2025-04-23 13:02:53', 'skvjhbdv'),
+(16, 1, 'fida barra a9ra ', 'la ilaha illa allah ', '2025-04-24', '1', 'high', NULL, 0, 1, 'email', 0, '2025-04-23 16:37:15', '2025-04-23 16:37:15', 'skvjhbdv'),
+(17, 1, 'fida barra a9ra ', 'la ilaha illa allah ', '2025-04-24', '1', 'high', NULL, 0, 1, 'email', 0, '2025-04-23 16:37:18', '2025-04-23 16:37:18', 'skvjhbdv'),
+(18, 1, 'fida barra a9ra ', 'la ilaha illa allah ', '2025-04-24', '1', 'high', NULL, 0, 1, 'email', 0, '2025-04-23 16:37:19', '2025-04-23 16:37:19', 'skvjhbdv');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tasks1`
+--
+
+DROP TABLE IF EXISTS `tasks1`;
+CREATE TABLE IF NOT EXISTS `tasks1` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `deadline` date DEFAULT NULL,
+  `late` enum('yes','no') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `duration` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `priority` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `category` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notification` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('En cours','Terminé') COLLATE utf8mb4_unicode_ci DEFAULT 'En cours',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tasks2`
+--
+
+DROP TABLE IF EXISTS `tasks2`;
+CREATE TABLE IF NOT EXISTS `tasks2` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `deadline` datetime DEFAULT NULL,
+  `duration` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `priority` int NOT NULL,
+  `category` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'en cours',
+  PRIMARY KEY (`id`),
+  KEY `fk_user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `tasks2`
+--
+
+INSERT INTO `tasks2` (`id`, `user_id`, `title`, `description`, `deadline`, `duration`, `priority`, `category`, `status`) VALUES
+(21, 1, 'mariouma hhhh', 'mlkjhgfc', '2025-04-28 00:00:00', '1', 1, 'work', 'en cours'),
+(19, 1, 'présenter pour la soutenance', 'ahahhahahhhhahah', '2025-04-29 00:00:00', '30min', 1, 'work', 'en cours'),
+(20, 1, 'laver les vaiselles', 'nnooooooo', '2025-04-26 00:00:00', '15min', 3, 'personal', 'en cours'),
+(23, 6, 'qlkdc,lk,c', '^d,clknsdkc', '2025-04-22 00:00:00', '2', 3, 'work', 'en cours'),
+(24, 6, 'lhgfdxbnvbnvnb', 'lkhgcvcnbv', '2025-04-25 00:00:00', '2', 1, 'work', 'en cours'),
+(25, 7, 'dcdcccc', 'csccsxx', '2025-04-12 00:00:00', '1', 2, 'shopping', 'en cours');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tasks_history`
+--
+
+DROP TABLE IF EXISTS `tasks_history`;
+CREATE TABLE IF NOT EXISTS `tasks_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `task_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `priority` enum('élevée','moyenne','basse') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deadline` datetime DEFAULT NULL,
+  `status` enum('pending','completed') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `completed_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `surname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notifications_enabled` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `surname`, `email`, `password`, `notifications_enabled`) VALUES
+(1, 'Test', 'User', 'test@example.com', '$2y$10$9XgG3zZ3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3z3', 1),
+(2, 'mariem123', 'mariem', 'user@example.com', '123', 1),
+(3, 'fida123456', 'ben hamouda', 'fidabenhamouda0@gmail.com', '123', 1),
+(4, 'Test', 'User', 'test1@example.com', 'password123', 1),
+(5, 'mariem', 'ben khalifa', 'mariem@marriem', '$2y$10$QAy95/UOhHP/034i7oId9OJbuKhrzVpOelXqFdEeqArUwpMTUB5n.', 1),
+(6, 'mariem1234', 'ben khalifa', 'mariemmariem123@email.com', '$2y$10$3XMpZZnMX9ehs8qrGseDqeSglY1OPgFBUXd2hVA9AtLv4KZISLV1S', 1),
+(7, 'mariem1234', 'ben khalifa', 'mariemmariem1234@email.com', '$2y$10$ZuuxUrRJPZAvXpLMHfnj3eIlzh/.TBl4nQdWlntGfCLElqYZZoFui', 1),
+(8, 'mariem1234', 'ben khalifa', 'mariemmariem12345@email.com', '$2y$10$XviH3MdvREBgOeZwudI5iuBHO2XNr09UIXAhGJPNt3ePzKutULMzu', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `utilisateurs`
+--
+
+DROP TABLE IF EXISTS `utilisateurs`;
+CREATE TABLE IF NOT EXISTS `utilisateurs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(50) NOT NULL,
+  `prenom` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `mot_de_passe` varchar(255) NOT NULL,
+  `telephone` varchar(20) NOT NULL,
+  `categories` text NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `tasks`
+--
+ALTER TABLE `tasks`
+  ADD CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
